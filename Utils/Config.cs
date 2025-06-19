@@ -1,8 +1,8 @@
-﻿using System;
-
-public class Class1
+﻿namespace Muziekspeler.Utils
 {
-	public Class1()
-	{
-	}
+    public static class Config
+    {
+        public static int UserCount = 100;
+        public static int RequestIntervalMs = 100;
+    }
 }

@@ -1,8 +1,23 @@
-﻿using System;
+﻿using System.Collections.Concurrent;
+using Muziekspeler.Model;
 
-public class Class1
+namespace Muziekspeler.Space
 {
-	public Class1()
-	{
-	}
+    public class RequestQueue
+    {
+        private readonly ConcurrentQueue<UserRequest> _queue = new();
+
+        public void Enqueue(UserRequest request)
+        {
+            _queue.Enqueue(request);
+            Console.WriteLine($"[Queue] Verzoek toegevoegd: {request}");
+        }
+
+        public bool TryDequeue(out UserRequest? request)
+        {
+            return _queue.TryDequeue(out request);
+        }
+
+        public int Count => _queue.Count;
+    }
 }

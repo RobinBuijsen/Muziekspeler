@@ -1,8 +1,18 @@
-﻿using System;
-
-public class Class1
+﻿namespace Muziekspeler.Model
 {
-	public Class1()
-	{
-	}
+    public class User
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Username { get; set; }
+
+        public User(string username)
+        {
+            Username = username;
+        }
+
+        public override string ToString()
+        {
+            return $"User {Username} (ID: {Id})";
+        }
+    }
 }
