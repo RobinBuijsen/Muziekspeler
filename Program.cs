@@ -55,8 +55,37 @@ app.MapGet("/nowplaying", (StreamService stream) =>
     if (song == null)
         return Results.Ok("Er speelt niets");
 
+<<<<<<< HEAD
     var info = $"{song.Artist} - {song.Title} ({song.Duration:mm\\:ss})";
     return Results.Ok(info);
 });
 
 app.Run();
+=======
+            // 4. Simuleer gebruikers
+            var userSimulator = new UserSimulator(dataGrid, Config.UserCount);
+            userSimulator.InitializeUsers();
+            userSimulator.StartSimulation(Config.RequestIntervalMs, maxRequests: 50);
+
+            // 5. Start monitoring thread (bijv. elke 5 seconden status)
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    Logger.Info($"📊 Actieve streams: {dataGrid.ActiveStreams.Count}");
+                    await Task.Delay(5000); // elke 5 seconden
+                }
+            });
+
+
+            // 6. Laat het programma draaien tot gebruiker afsluit
+            Logger.Info("✅ Systeem draait. Druk op [Enter] om te stoppen...");
+            Console.ReadLine();
+
+            // 7. Stop background services netjes
+            streamService.Stop();
+            Logger.Info("🛑 Muziekspeler POC afgesloten.");
+        }
+    }
+}
+>>>>>>> 3ee45d4461cc904e6b1ec2cf31ed3ba6d89fcdaa
