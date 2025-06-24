@@ -25,13 +25,24 @@ namespace Muziekspeler
             // 4. Simuleer gebruikers
             var userSimulator = new UserSimulator(dataGrid, Config.UserCount);
             userSimulator.InitializeUsers();
-            userSimulator.StartSimulation(Config.RequestIntervalMs);
+            userSimulator.StartSimulation(Config.RequestIntervalMs, maxRequests: 50);
 
-            // 5. Laat het programma draaien tot gebruiker afsluit
+            // 5. Start monitoring thread (bijv. elke 5 seconden status)
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    Logger.Info($"📊 Actieve streams: {dataGrid.ActiveStreams.Count}");
+                    await Task.Delay(5000); // elke 5 seconden
+                }
+            });
+
+
+            // 6. Laat het programma draaien tot gebruiker afsluit
             Logger.Info("✅ Systeem draait. Druk op [Enter] om te stoppen...");
             Console.ReadLine();
 
-            // 6. Stop background services netjes
+            // 7. Stop background services netjes
             streamService.Stop();
             Logger.Info("🛑 Muziekspeler POC afgesloten.");
         }

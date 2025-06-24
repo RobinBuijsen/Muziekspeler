@@ -28,24 +28,25 @@ namespace Muziekspeler.ClientSimulation
             _dataGrid.Log($"👥 {_userCount} gebruikers gesimuleerd.");
         }
 
-        public void StartSimulation(int intervalMs = 200)
+        public void StartSimulation(int intervalMs = 200, int maxRequests = 1000)
         {
             Task.Run(async () =>
             {
                 var songList = _dataGrid.SongCatalog.Values.ToList();
 
-                while (true)
+                for (int i = 0; i < maxRequests; i++)
                 {
                     var user = _simulatedUsers[_random.Next(_simulatedUsers.Count)];
                     var song = songList[_random.Next(songList.Count)];
 
                     var request = new UserRequest(user.Id, song);
                     _dataGrid.RequestQueue.Enqueue(request);
+                    _dataGrid.Log($"📥 Verzoek {i + 1}/{maxRequests}: {user.Username} wil '{song.Title}' streamen");
 
-                    _dataGrid.Log($"📥 Verzoek ingediend: {user.Username} wil '{song.Title}' streamen");
-
-                    await Task.Delay(intervalMs); // wacht tussen de verzoeken
+                    await Task.Delay(intervalMs);
                 }
+
+                _dataGrid.Log($"🎯 Simulatie voltooid: {maxRequests} verzoeken verzonden.");
             });
         }
     }
