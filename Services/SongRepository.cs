@@ -29,5 +29,11 @@ namespace Muziekspeler.Services
                 _dataGrid.Log($"🎵 Song geladen: {song}");
             }
         }
+
+        public Song? GetCurrentSong()
+        {
+            // Voor nu: retourneer het eerste nummer in de catalogus
+            return _dataGrid.SongCatalog.Values.FirstOrDefault();
+        }
     }
 }

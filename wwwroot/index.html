@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Muziekspeler Web</title>
+</head>
+<body>
+    <h1>Muziekspeler</h1>
+
+    <button onclick="play()">▶️ Play</button>
+    <button onclick="pause()">⏸️ Pauze</button>
+    <button onclick="next()">⏭️ Volgende</button>
+
+    <p id="nowPlaying">Er speelt nog niets...</p>
+
+    <script>
+        let poller = null;
+
+        function play() {
+            fetch('/play', { method: 'POST' }).then(() => {
+                startPolling();
+            });
+        }
+
+        function pause() {
+            fetch('/pause', { method: 'POST' }).then(() => {
+                stopPolling();
+                document.getElementById('nowPlaying').innerText = "⏸️ Gepauzeerd";
+            });
+        }
+
+        function next() {
+            fetch('/next', { method: 'POST' })
+                .then(() => updateNowPlaying()); // ← meteen de song ophalen
+        }
+
+
+        function startPolling() {
+            if (poller) return;
+            poller = setInterval(() => {
+                fetch('/nowplaying')
+                    .then(res => res.text())
+                    .then(info => {
+                        document.getElementById('nowPlaying').innerText = "🎵 Nu speelt: " + info;
+                    });
+            }, 2000);
+        }
+
+        function stopPolling() {
+            clearInterval(poller);
+            poller = null;
+        }
+    </script>
+</body>
+</html>

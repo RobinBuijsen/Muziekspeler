@@ -3,37 +3,60 @@ using Muziekspeler.Services;
 using Muziekspeler.Space;
 using Muziekspeler.Utils;
 
-namespace Muziekspeler
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<DataGrid>();
+builder.Services.AddSingleton<SongRepository>();
+builder.Services.AddSingleton<StreamService>();
+builder.Services.AddSingleton<UserSimulator>();
+
+var app = builder.Build();
+
+// Initialisatie vóór het starten van de webserver
+var dataGrid = app.Services.GetRequiredService<DataGrid>();
+var songRepo = app.Services.GetRequiredService<SongRepository>();
+var streamService = app.Services.GetRequiredService<StreamService>();
+var userSimulator = app.Services.GetRequiredService<UserSimulator>();
+
+Logger.Info("🚀 Muziekspeler Web POC gestart...");
+
+// Laad songs
+songRepo.LoadTestSongs();
+
+// Start services
+streamService.Play();
+userSimulator.InitializeUsers();
+userSimulator.StartSimulation(Config.RequestIntervalMs);
+
+// Serve statische bestanden (HTML, JS)
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapPost("/play", (StreamService stream) =>
 {
-    internal class Program
-    {
-        static async Task Main(string[] args)
-        {
-            Logger.Info("🚀 Muziekspeler POC gestart...");
+    stream.Play();
+    return Results.Ok("Gestart");
+});
 
-            // 1. Initialiseer centrale SBA-component
-            var dataGrid = new DataGrid();
+app.MapPost("/pause", (StreamService stream) =>
+{
+    stream.Pause();
+    return Results.Ok("Gepauzeerd");
+});
 
-            // 2. Laad songs
-            var songRepo = new SongRepository(dataGrid);
-            songRepo.LoadTestSongs();
+app.MapPost("/next", (StreamService stream) =>
+{
+    stream.Next();
+    return Results.Ok("Volgende");
+});
 
-            // 3. Start StreamService
-            var streamService = new StreamService(dataGrid);
-            streamService.Start();
+app.MapGet("/nowplaying", (StreamService stream) =>
+{
+    var song = stream.CurrentSong;
+    if (song == null)
+        return Results.Ok("Er speelt niets");
 
-            // 4. Simuleer gebruikers
-            var userSimulator = new UserSimulator(dataGrid, Config.UserCount);
-            userSimulator.InitializeUsers();
-            userSimulator.StartSimulation(Config.RequestIntervalMs);
+    var info = $"{song.Artist} - {song.Title} ({song.Duration:mm\\:ss})";
+    return Results.Ok(info);
+});
 
-            // 5. Laat het programma draaien tot gebruiker afsluit
-            Logger.Info("✅ Systeem draait. Druk op [Enter] om te stoppen...");
-            Console.ReadLine();
-
-            // 6. Stop background services netjes
-            streamService.Stop();
-            Logger.Info("🛑 Muziekspeler POC afgesloten.");
-        }
-    }
-}
+app.Run();
