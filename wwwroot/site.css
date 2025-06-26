@@ -13,6 +13,15 @@ body {
     flex-direction: row;
 }
 
+.logo {
+    width: 100%;
+    max-width: 160px;
+    height: auto;
+    margin: 20px auto;
+    display: block;
+    border-radius: 8px;
+}
+
 .sidebar {
     width: 200px;
     background-color: #000;
@@ -22,7 +31,7 @@ body {
 
     .sidebar h2 {
         font-size: 22px;
-        color: #1DB954;
+        color: #f1c40f;
         margin-bottom: 30px;
     }
 
@@ -50,6 +59,8 @@ body {
     flex: 1;
     padding: 30px;
     overflow-y: auto;
+    max-height: calc(100vh - 50px); 
+    box-sizing: border-box;
 }
 
 .header h1 {
@@ -88,20 +99,49 @@ body {
         flex: 1;
     }
 
-.controls button {
-    margin-left: 8px;
-    background-color: #1DB954;
-    border: none;
-    color: #fff;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
+/* Controls */
+.controls {
+    display: flex;
+    gap: 8px;
 }
 
-    .controls button:hover {
-        background-color: #1ed760;
+    .controls button {
+        margin-left: 8px;
+        background-color: #f1c40f;
+        border: none;
+        color: #000;
+        padding: 12px 12px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 20px; /* Vergroot icon */
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
+
+        .controls button:hover {
+            background-color: #f39c12;
+        }
+
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    border: 2px solid #121212;
+}
+
 
 /* Footer */
 .footer {

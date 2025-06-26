@@ -22,7 +22,7 @@ namespace Muziekspeler.Services
                 new Song("Solar Drift", "Nebulae", TimeSpan.FromMinutes(3.2)),
                 new Song("Binary Love", "Code Pulse", TimeSpan.FromMinutes(3.75)),
                 new Song("Nikol Dalle", "Drops & Waves", TimeSpan.FromMinutes(9.21)),
-                new Song("Nardie Nananana", "Boursin x Despacito", TimeSpan.FromMinutes(0.11))
+                new Song("Ierdan Nanana", "Boursin x Despacito", TimeSpan.FromMinutes(0.11))
             };
 
             foreach (var song in songs)

@@ -9,7 +9,8 @@
     <div class="app">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <h2>Muziekspeler</h2>
+            <img src="images/Logo Synth Society Music Label.png" alt="Logo" class="logo" />
+            <h2>Synth Society Muziekspeler</h2>
             <ul class="nav-links">
                 <li><a href="#">🏠 Home</a></li>
                 <li><a href="#">🔍 Zoeken</a></li>
@@ -39,7 +40,7 @@
         let poller = null;
 
         function fetchSongs() {
-            fetch('/songs') // Zorg dat je backend hierop reageert
+            fetch('/songs')
                 .then(res => res.json())
                 .then(songs => {
                     const container = document.getElementById('songList');
@@ -52,8 +53,8 @@
                         div.innerHTML = `
                                 <span>🎵 ${song.artist} - ${song.title} (${formatDuration(song.duration)})</span>
                                 <div class="controls">
-                                    <button onclick="playSong('${song.id}')">▶️</button>
-                                    <button onclick="pause()">⏸️</button>
+                                    <button onclick="playSong('${song.id}')">▶</button>
+                                    <button onclick="pause()">⏸</button>
                                 </div>
                             `;
                         container.appendChild(div);
