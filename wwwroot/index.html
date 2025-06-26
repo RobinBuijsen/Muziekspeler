@@ -1,32 +1,64 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
-    <link rel="stylesheet" href="site.css">
+    <meta charset="UTF-8">
     <title>Muziekspeler Web</title>
+    <link rel="stylesheet" href="site.css">
 </head>
 <body>
-    <h1>Muziekspeler</h1>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>Muziekspeler</h2>
+            <ul class="nav-links">
+                <li><a href="#">🏠 Home</a></li>
+                <li><a href="#">🔍 Zoeken</a></li>
+                <li><a href="#">👤 Profiel</a></li>
+            </ul>
+        </aside>
 
-    <div id="songList"></div>
+        <!-- Main Content -->
+        <main class="content">
+            <div class="header">
+                <h1>Welkom terug</h1>
+                <p>Speel je favoriete nummers af</p>
+            </div>
 
-    <p id="nowPlaying">Er speelt nog niets...</p>
+            <div class="song-list" id="songList">
+                <!-- Song items worden hier door JS geplaatst -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p id="nowPlaying">🎵 Er speelt nog niets...</p>
+    </footer>
 
     <script>
-        async function fetchSongs() {
-            const res = await fetch('/songs');
-            const songs = await res.json();
-            const container = document.getElementById('songList');
-            container.innerHTML = '';
+        let poller = null;
 
-            songs.forEach(song => {
-                const div = document.createElement('div');
-                div.innerHTML = `
-                        🎵 ${song.artist} - ${song.title} (${song.duration})
-                        <button onclick="playSong('${song.id}')">▶️</button>
-                        <button onclick="pause()">⏸️</button>
-                    `;
-                container.appendChild(div);
-            });
+        function fetchSongs() {
+            fetch('/songs') // Zorg dat je backend hierop reageert
+                .then(res => res.json())
+                .then(songs => {
+                    const container = document.getElementById('songList');
+                    container.innerHTML = '';
+
+                    songs.forEach(song => {
+                        const div = document.createElement('div');
+                        div.className = 'song-item';
+
+                        div.innerHTML = `
+                                <span>🎵 ${song.artist} - ${song.title} (${formatDuration(song.duration)})</span>
+                                <div class="controls">
+                                    <button onclick="playSong('${song.id}')">▶️</button>
+                                    <button onclick="pause()">⏸️</button>
+                                </div>
+                            `;
+                        container.appendChild(div);
+                    });
+                });
         }
 
         function playSong(songId) {
@@ -42,25 +74,28 @@
             });
         }
 
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
         function startPolling() {
-            if (window.poller) return;
-            window.poller = setInterval(updateNowPlaying, 2000);
+            if (poller) return;
+            poller = setInterval(() => {
+                fetch('/nowplaying')
+                    .then(res => res.text())
+                    .then(info => {
+                        document.getElementById('nowPlaying').innerText = "🎵 Nu speelt: " + info;
+                    });
+            }, 2000);
         }
 
         function stopPolling() {
-            clearInterval(window.poller);
-            window.poller = null;
+            clearInterval(poller);
+            poller = null;
         }
 
-        function updateNowPlaying() {
-            fetch('/nowplaying')
-                .then(res => res.text())
-                .then(info => {
-                    document.getElementById('nowPlaying').innerText = "🎵 Nu speelt: " + info;
-                });
-        }
-
-        // Init
         fetchSongs();
     </script>
 </body>
