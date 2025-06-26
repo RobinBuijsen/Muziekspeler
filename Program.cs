@@ -29,21 +29,21 @@ streamService.Play();
 userSimulator.InitializeUsers();
 userSimulator.StartSimulation(Config.RequestIntervalMs, maxRequests: 50);
 
-// 4. Start monitoring thread (bijv. elke 5 seconden status)
+// 4. Realtime monitoring
 _ = Task.Run(async () =>
 {
     while (true)
     {
         Logger.Info($"📊 Actieve streams: {dataGrid.ActiveStreams.Count}");
-        await Task.Delay(5000); // elke 5 seconden
+        await Task.Delay(5000);
     }
 });
 
-// 5. Webinterface statische bestanden
+// 5. Statische webinterface
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// 6. Web-API endpoints
+// 6. API Endpoints
 app.MapPost("/play", (StreamService stream) =>
 {
     stream.Play();
@@ -72,11 +72,35 @@ app.MapGet("/nowplaying", (StreamService stream) =>
     return Results.Ok(info);
 });
 
-// 7. Laat de app actief tot gebruiker afsluit
+// Lijst van alle songs
+app.MapGet("/songs", (SongRepository repo) =>
+{
+    var songs = repo.GetAllSongs()
+        .Select(song => new {
+            id = song.Id,
+            title = song.Title,
+            artist = song.Artist,
+            duration = song.Duration.ToString(@"mm\:ss")
+        });
+
+    return Results.Json(songs);
+});
+
+// Speel specifiek nummer
+app.MapPost("/play/{id:guid}", (Guid id, DataGrid grid, StreamService stream) =>
+{
+    if (grid.SongCatalog.TryGetValue(id, out var song))
+    {
+        stream.PlaySpecificSong(song);
+        return Results.Ok($"Speelt: {song.Title}");
+    }
+    return Results.NotFound("Liedje niet gevonden");
+});
+
+// 7. Start
 Logger.Info("✅ Systeem draait. Druk op [Enter] om te stoppen...");
-app.RunAsync();  // webserver blijft draaien
+app.RunAsync();
 Console.ReadLine();
 
-// 8. Stop services netjes bij afsluiten
 streamService.Stop();
 Logger.Info("🛑 Muziekspeler POC afgesloten.");

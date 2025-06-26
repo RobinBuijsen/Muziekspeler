@@ -30,6 +30,12 @@ namespace Muziekspeler.Services
             }
         }
 
+        public List<Song> GetAllSongs()
+        {
+            return _dataGrid.SongCatalog.Values.ToList();
+        }
+
+
         public Song? GetCurrentSong()
         {
             // Voor nu: retourneer het eerste nummer in de catalogus

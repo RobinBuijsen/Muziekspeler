@@ -1,0 +1,57 @@
+<head >
+<title > Muziekspeler Web</title >
+<style >
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    color: #444;
+}
+
+.song-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.song-info {
+    flex-grow: 1;
+}
+
+.song-controls button {
+    margin-left: 8px;
+    padding: 6px 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+    .song-controls button:hover {
+        background-color: #0056b3;
+    }
+
+#nowPlaying {
+    margin-top: 2rem;
+    font-size: 1.1rem;
+    font-style: italic;
+    text-align: center;
+}
+
+</style >
+</head >

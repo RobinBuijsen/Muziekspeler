@@ -14,6 +14,7 @@ namespace Muziekspeler.Services
 
         public bool IsRunning => isRunning;
         public bool IsPaused => isPaused;
+
         public Song? CurrentSong => isRunning && !isPaused && _playlist.Count > 0
             ? _playlist[_currentIndex]
             : null;
@@ -40,6 +41,20 @@ namespace Muziekspeler.Services
             isPaused = false;
 
             Console.WriteLine($"▶️ Playing: {_playlist[_currentIndex]}");
+        }
+
+        public void PlaySpecificSong(Song song)
+        {
+            if (!_playlist.Contains(song))
+            {
+                _playlist.Insert(0, song);
+            }
+
+            _currentIndex = _playlist.IndexOf(song);
+            isRunning = true;
+            isPaused = false;
+
+            Console.WriteLine($"▶️ Speelt specifiek liedje: {song}");
         }
 
         public void Pause()
@@ -70,7 +85,6 @@ namespace Muziekspeler.Services
             Console.WriteLine("🛑 Stopped");
         }
 
-        // Verwerk RequestQueue van gebruikers
         private async Task StartRequestProcessingLoop()
         {
             while (true)
@@ -79,22 +93,18 @@ namespace Muziekspeler.Services
                 {
                     if (_dataGrid.ActiveUsers.ContainsKey(request.UserId))
                     {
-                        // Stop vorige stream indien aanwezig
                         if (_dataGrid.ActiveStreams.TryGetValue(request.UserId, out var previousSong))
                         {
                             _dataGrid.Log($"🔁 {request.UserId} was al aan het streamen: '{previousSong.Title}'. Stream wordt vervangen door: '{request.RequestedSong.Title}'");
                         }
 
-                        // Start nieuwe stream
                         _dataGrid.ActiveStreams[request.UserId] = request.RequestedSong;
                         _dataGrid.Log($"✅ Stream gestart: {request.UserId} → {request.RequestedSong.Title}");
 
-                        // Simuleer afspelen
                         _ = Task.Run(async () =>
                         {
                             await Task.Delay(request.RequestedSong.Duration);
 
-                            // Verwijder als nog steeds actief
                             if (_dataGrid.ActiveStreams.TryGetValue(request.UserId, out var currentSong)
                                 && currentSong.Id == request.RequestedSong.Id)
                             {
@@ -110,7 +120,7 @@ namespace Muziekspeler.Services
                 }
                 else
                 {
-                    await Task.Delay(10); // Geen verzoek → kort wachten
+                    await Task.Delay(10);
                 }
             }
         }
